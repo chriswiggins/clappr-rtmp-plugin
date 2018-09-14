@@ -1,35 +1,35 @@
-var path = require('path'),
-    webpack = require('webpack'),
-    TransferWebpackPlugin = require('transfer-webpack-plugin'),
-    minimize = process.argv.indexOf('--no-minimize') === -1 ? true : false,
-    plugins = [new TransferWebpackPlugin([
-        { from: 'public/', to: 'assets/' }
-    ])],
-    filename = 'rtmp.js';
+const path = require('path');
+const TransferWebpackPlugin = require('transfer-webpack-plugin');
+const plugins = [new TransferWebpackPlugin([
+    { from: 'public/', to: 'assets/' }
+    ])];
+let filename = 'rtmp.js';
 
-if (minimize) {
-    plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
+const production = process.env.NODE_ENV === 'production';
+
+if (production) {
     filename = 'rtmp.min.js';
 }
 
 module.exports = {
+    mode: production ? 'production' : 'development',
     entry: path.resolve(__dirname, 'index.js'),
-    devtool: minimize ? "source-map" : "",
+    devtool: production ? "source-map" : "",
     externals: {
         clappr: 'Clappr',
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
-                loader: 'babel',
+                loader: 'babel-loader',
                 query: {
                     compact: true,
                 }
             },
             {
                 test: /\.scss$/,
-                loaders: ['css', 'sass?includePaths[]='
+                loaders: ['css-loader', 'sass-loader?includePaths[]='
                   + path.resolve(__dirname, './node_modules/compass-mixins/lib')
                   + '&includePaths[]='
                   + path.resolve(__dirname, './node_modules/clappr/src/base/scss')
@@ -39,7 +39,7 @@ module.exports = {
                 include: path.resolve(__dirname, 'src'),
             },
             {
-                test: /\.html/, loader: 'html?minimize=false'
+                test: /\.html/, loader: 'html-loader?minimize=false'
             },
             {
                 test: /\.(png|woff|eot|ttf|swf)/, loader: 'file-loader'
@@ -47,7 +47,7 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: ['', '.js'],
+        extensions: ['.js'],
     },
     plugins: plugins,
     output: {
