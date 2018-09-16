@@ -2,7 +2,7 @@
   "name": "clappr-rtmp",
   "version": "0.0.22",
   "description": "RTMP Support for Clappr Player",
-  "main": "dist/rtmp.js",
+  "main": "dist/rtmp.min.js",
   "author": "Flávio Ribeiro",
   "keywords": [
     "rtmp",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
     "babel-loader": "^8.0.2",
     "css-loader": "^1.0.0",
     "mocha": "^5.2.0",
