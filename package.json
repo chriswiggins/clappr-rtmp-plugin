@@ -30,18 +30,18 @@
     "lock": "rm -rf npm-shrinkwrap.json node_modules && npm install --silent && npm shrinkwrap"
   },
   "dependencies": {
-    "clappr": "latest"
+    "clappr": "latest",
+    "html-loader": "^0.5.5",
+    "raw-loader": "^0.5.1",
+    "sass-loader": "^7.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "babel-loader": "^8.0.2",
     "css-loader": "^1.0.0",
-    "html-loader": "^0.5.5",
     "mocha": "^5.2.0",
     "mocha-loader": "^2.0.0",
     "node-sass": "^4.9.3",
-    "raw-loader": "^0.5.1",
-    "sass-loader": "^7.1.0",
     "style-loader": "^0.23.0",
     "transfer-webpack-plugin": "^0.1.4",
     "webpack": "^4.19.0",
