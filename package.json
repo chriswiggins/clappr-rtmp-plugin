@@ -3,7 +3,6 @@
   "version": "0.0.22",
   "description": "RTMP Support for Clappr Player",
   "main": "dist/rtmp.js",
-  "module": "index.js",
   "author": "Flávio Ribeiro",
   "keywords": [
     "rtmp",
