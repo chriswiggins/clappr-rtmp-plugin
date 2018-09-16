@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import {Browser, Events, Flash, Mediator, Styler, UICorePlugin, template} from 'clappr'
+import Clappr, { Browser, Events, Flash, Mediator, Styler, template } from 'clappr'
 
 import flashHTML from '!html-loader!../public/flash.html'
 import flashStyle from '!raw-loader!sass-loader!../public/flash.scss'
@@ -73,6 +73,10 @@ export default class RTMP extends Flash {
         }
     }
 
+    set scaling(scaling) {
+        this.el.playerScaling(scaling);
+    }
+
     get autoSwitchLevels() {
         return this.el.isAutoSwitchLevels();
     }
@@ -105,6 +109,10 @@ export default class RTMP extends Flash {
         Mediator.on(this.uniqueId + ':levelChanging', this._levelChanging, this)
         Mediator.on(this.uniqueId + ':levelChanged', this._levelChange, this)
         Mediator.on(this.uniqueId + ':flashready', this._bootstrap, this)
+        //Temporary hack around webpack not globally exposing clappr
+        if(!window.Clappr){
+            window.Clappr = Clappr;
+        }
     }
 
     stopListening() {
@@ -227,7 +235,11 @@ export default class RTMP extends Flash {
 }
 
 RTMP.canPlay = function (source, mimeType) {
-    return !!((source.indexOf('rtmp://') > -1 || source.indexOf('rtmps://') > -1 || source.indexOf('.smil') > -1 || mimeType && mimeType.indexOf('rtmp') > -1) && Browser.hasFlash)
+    return !!((
+        source.indexOf('rtmp://') > -1 || 
+        source.indexOf('rtmps://') > -1 || 
+        source.indexOf('.smil') > -1 || 
+        mimeType && mimeType.indexOf('rtmp') > -1) && (Browser.hasFlash || Browser.isChrome)); //Chrome doesn't expose hasFlash
 };
 
 RTMP.debug = s => console.log(s)

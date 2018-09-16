@@ -53,6 +53,7 @@ package {
     private var isLive:Boolean = false;
     private var useAppInstance:Boolean = false;
     private var proxyType:String = "none";
+    private var defaultScaling:String;
 
     CONFIG::LOGGING {
       private static const logInit:Boolean = initLog();
@@ -73,6 +74,7 @@ package {
       isLive = this.root.loaderInfo.parameters.playbackType == 'live';
       useAppInstance = this.root.loaderInfo.parameters.useAppInstance == 'true';
       proxyType = this.root.loaderInfo.parameters.proxyType;
+      defaultScaling = this.root.loaderInfo.parameters.scaling;
       mediaFactory = new DefaultMediaFactory();
       mediaContainer = new MediaContainer();
 
@@ -83,18 +85,12 @@ package {
       mediaContainer.width = stage.stageWidth;
       mediaContainer.height = stage.stageHeight;
 
-      stage.align = StageAlign.TOP;
+      stage.align = StageAlign.TOP_LEFT;
       stage.scaleMode = StageScaleMode.NO_SCALE; //We handle scaling ourselves
-
-      stage.addEventListener(Event.RESIZE, _onStageResize);
 
       setupCallbacks();
       setupGetters();
-
       _triggerEvent('flashready');
-
-      stage.scaleMode = StageScaleMode.NO_SCALE;
-      stage.align = StageAlign.TOP_LEFT;
 
       if (stage) {
         resize();
@@ -109,7 +105,7 @@ package {
       if(mediaElement && mediaContainer && stage){
         mediaContainer.width = stage.stageWidth;
         mediaContainer.height = stage.stageHeight;
-        setScaleMode(mediaElement, stage.stageWidth, stage.stageHeight);
+        playerScaling("");
       }
     }
 
@@ -178,19 +174,6 @@ package {
       }
     }
 
-    private function setScaleMode(mediaElement:MediaElement, width:Number, height:Number):void {
-      var layout:LayoutMetadata = new LayoutMetadata();
-      layout.width  = width;
-      layout.height = height;
-      layout.layoutMode = LayoutMode.HORIZONTAL;
-      layout.horizontalAlign = HorizontalAlign.CENTER;
-      layout.verticalAlign = VerticalAlign.MIDDLE;
-      layout.scaleMode = ScaleMode.LETTERBOX;
-
-      mediaElement.removeMetadata(LayoutMetadata.LAYOUT_NAMESPACE);
-      mediaElement.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layout);
-    }
-
     private function playerPlay(url:String=null):void {
       try {
         if (!mediaElement) {
@@ -214,9 +197,12 @@ package {
           // Load the plugin.
           mediaFactory.loadPlugin(pluginResource);
 
+          videoElement = new VideoElement(urlResource);
+          videoElement.smoothing = true;
+
           //create new MediaPlayer - it controls your media provided in media property
           mediaPlayer = new MediaPlayer();
-
+          
           mediaPlayer.bufferTime = this.root.loaderInfo.parameters.bufferTime;
           mediaPlayer.autoPlay = false;
           mediaPlayer.autoDynamicStreamSwitch = this.root.loaderInfo.parameters.autoSwitch == 'true';
@@ -226,15 +212,16 @@ package {
           mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaError);
           mediaPlayer.addEventListener(DynamicStreamEvent.SWITCHING_CHANGE, onLevelSwitching);
 
-          mediaElement = mediaFactory.createMediaElement(urlResource);
+          mediaElement = mediaContainer.addMediaElement(videoElement);
           mediaElement.addEventListener(MediaElementEvent.TRAIT_ADD, onTraitAdd);
+          
+          mediaContainer.width = stage.stageWidth;
+          mediaContainer.height = stage.stageHeight;
 
-          mediaContainer.addMediaElement(mediaElement);
-
-          mediaPlayer.media = mediaElement;
+          mediaPlayer.media = videoElement;
 
           //Set the player scaling
-          playerScaling(this.root.loaderInfo.parameters.scaling);
+          playerScaling("");
 
           addChild(mediaContainer);
           resize();
@@ -246,7 +233,7 @@ package {
           _changeStateAndNotify('PLAYING')
         }
       } catch (err:Error) {
-        debugLog('Catch error: ' + err.messsage);
+        //debugLog('Catch error: ' + err.messsage);
         _changeStateAndNotify('ERROR')
       }
     }
@@ -285,6 +272,10 @@ package {
     private function playerScaling(scaling: String):void {
       if(!mediaElement) return;
 
+      if(!scaling){
+        scaling = defaultScaling;
+      }
+
       //layoutMetadata needs to be added to the mediaElement depicting what scaling the video should have
       var layoutMetadata:LayoutMetadata = new LayoutMetadata();
       layoutMetadata.percentWidth = 100;
@@ -293,7 +284,7 @@ package {
       //The following is required for correct alignment in letterbox scaling
       layoutMetadata.layoutMode = LayoutMode.HORIZONTAL
       layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-      layoutMetadata.verticalAlign = VerticalAlign.TOP;
+      layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
 
       switch(scaling){
        case 'stretch':
@@ -368,11 +359,6 @@ package {
     private function onFinish(event:TimeEvent):void {
       mediaPlayer.stop();
       _changeStateAndNotify('ENDED')
-    }
-
-    protected function _onStageResize(event : Event) : void {
-      mediaContainer.width = stage.stageWidth;
-      mediaContainer.height = stage.stageHeight;
     }
 
     private function _triggerEvent(name: String):void {
