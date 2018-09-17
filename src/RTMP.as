@@ -53,7 +53,6 @@ package {
     private var isLive:Boolean = false;
     private var useAppInstance:Boolean = false;
     private var proxyType:String = "none";
-    private var defaultScaling:String;
 
     CONFIG::LOGGING {
       private static const logInit:Boolean = initLog();
@@ -74,7 +73,6 @@ package {
       isLive = this.root.loaderInfo.parameters.playbackType == 'live';
       useAppInstance = this.root.loaderInfo.parameters.useAppInstance == 'true';
       proxyType = this.root.loaderInfo.parameters.proxyType;
-      defaultScaling = this.root.loaderInfo.parameters.scaling;
       mediaFactory = new DefaultMediaFactory();
       mediaContainer = new MediaContainer();
 
@@ -105,7 +103,6 @@ package {
       if(mediaElement && mediaContainer && stage){
         mediaContainer.width = stage.stageWidth;
         mediaContainer.height = stage.stageHeight;
-        playerScaling("");
       }
     }
 
@@ -221,7 +218,17 @@ package {
           mediaPlayer.media = videoElement;
 
           //Set the player scaling
-          playerScaling("");
+          var layoutMetadata:LayoutMetadata = mediaPlayer.media.getMetadata(LayoutMetadata.LAYOUT_NAMESPACE) as LayoutMetadata;
+        
+          layoutMetadata.percentWidth = 100;
+          layoutMetadata.percentHeight = 100;
+
+          //The following is required for correct alignment in letterbox scaling
+          layoutMetadata.layoutMode = LayoutMode.HORIZONTAL
+          layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
+          layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+
+          playerScaling(this.root.loaderInfo.parameters.scaling);
 
           addChild(mediaContainer);
           resize();
@@ -272,19 +279,8 @@ package {
     private function playerScaling(scaling: String):void {
       if(!mediaElement) return;
 
-      if(!scaling){
-        scaling = defaultScaling;
-      }
-
       //layoutMetadata needs to be added to the mediaElement depicting what scaling the video should have
-      var layoutMetadata:LayoutMetadata = new LayoutMetadata();
-      layoutMetadata.percentWidth = 100;
-      layoutMetadata.percentHeight = 100;
-
-      //The following is required for correct alignment in letterbox scaling
-      layoutMetadata.layoutMode = LayoutMode.HORIZONTAL
-      layoutMetadata.horizontalAlign = HorizontalAlign.CENTER;
-      layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
+      var layoutMetadata:LayoutMetadata = mediaPlayer.media.getMetadata(LayoutMetadata.LAYOUT_NAMESPACE) as LayoutMetadata;
 
       switch(scaling){
        case 'stretch':
@@ -303,8 +299,7 @@ package {
          break;
       }
 
-      //Assign layoutMetadata to mediaElement
-      mediaElement.addMetadata(LayoutMetadata.LAYOUT_NAMESPACE, layoutMetadata);
+      resize();
     }
 
     private function setLevel(level:int):void {

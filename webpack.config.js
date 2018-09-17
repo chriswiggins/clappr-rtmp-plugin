@@ -13,7 +13,7 @@ if (production) {
 
 module.exports = {
     mode: production ? 'production' : 'development',
-    entry: path.resolve(__dirname, 'index.js'),
+    entry: path.resolve(__dirname, 'src/main.js'),
     devtool: production ? "source-map" : "",
     externals: {
         clappr: 'Clappr',
