@@ -1,6 +1,6 @@
 {
-  "name": "clappr-rtmp",
-  "version": "0.0.22",
+  "name": "@vgrid/clappr-rtmp",
+  "version": "1.0.0",
   "description": "RTMP Support for Clappr Player",
   "main": "dist/rtmp.min.js",
   "author": "Flávio Ribeiro",
@@ -13,11 +13,11 @@
   ],
   "homepage": "http://clappr.io",
   "bugs": {
-    "url": "http://github.com/flavioribeiro/clappr-rtmp-plugin"
+    "url": "http://github.com/vgrid/clappr-rtmp-plugin"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:flavioribeiro/clappr-rtmp-plugin.git"
+    "url": "git@github.com:vgrid/clappr-rtmp-plugin.git"
   },
   "scripts": {
     "build_swf": "sh build_player.sh",
