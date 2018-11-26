@@ -115,7 +115,7 @@ package logging
 			msg += "[" + category + "] " + applyParams(message, params);
 
 			// trace the message
-			ExternalInterface.call('RTMP.debug', msg);
+			ExternalInterface.call('console.log', msg);
 		}
 
 		private function leadingZeros(x:Number):String

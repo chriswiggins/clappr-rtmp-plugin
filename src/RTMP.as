@@ -240,7 +240,7 @@ package {
           _changeStateAndNotify('PLAYING')
         }
       } catch (err:Error) {
-        //debugLog('Catch error: ' + err.messsage);
+        debugLog('Catch error: ' + err.toString());
         _changeStateAndNotify('ERROR')
       }
     }
@@ -347,6 +347,11 @@ package {
     }
 
     private function onTimeUpdated(event:TimeEvent):void {
+      if(isNaN(mediaPlayer.currentTime)) {
+        mediaPlayer.stop();
+        _changeStateAndNotify('ERROR');
+        return;
+      }
       _triggerEvent('progress');
       _triggerEvent('timeupdate');
     }
@@ -369,6 +374,7 @@ package {
     }
 
     private function _changeStateAndNotify(state: String):void {
+      debugLog('Changing state to '+state);
       playbackState = state;
       _triggerEvent('statechanged');
     }

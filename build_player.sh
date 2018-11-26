@@ -1,7 +1,7 @@
 
 echo "Running docker image instrumentisto/flex-sdk to build RTMP.swf"
 docker run --rm -it -v $(pwd):/app instrumentisto/flex-sdk mxmlc \
-  -define CONFIG::LOGGING true \
+  -define CONFIG::LOGGING false \
   -define CONFIG::MOCK false \
   -define CONFIG::PLATFORM true \
   -define CONFIG::FLASH_10_1 true \
