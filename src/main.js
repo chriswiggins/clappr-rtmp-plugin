@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import Clappr, { Browser, Events, Flash, Mediator, Styler, template } from 'clappr'
+import Clappr, { Browser, Events, Flash, Mediator, Styler, template, $ } from 'clappr'
 
 import flashHTML from '!html-loader!../public/flash.html'
 import flashStyle from '!raw-loader!sass-loader!../public/flash.scss'
@@ -34,6 +34,7 @@ export default class RTMP extends Flash {
         this.options.rtmpConfig.startLevel = this.options.rtmpConfig.startLevel === undefined ? -1 : this.options.rtmpConfig.startLevel
         this.options.rtmpConfig.autoSwitch = this.options.rtmpConfig.autoSwitch === undefined ? false : this.options.rtmpConfig.autoSwitch
         this.options.rtmpConfig.switchRules = this.options.rtmpConfig.switchRules;
+        this.overlayAppended = false;
 
         this.addListeners()
         this._setupPlaybackType()
@@ -128,6 +129,10 @@ export default class RTMP extends Flash {
         this.el.height = '100%'
         this.options.autoPlay && this.play()
         this._setupSettings()
+        if(!this.overlayAppended){
+            $('<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%" />').insertAfter(this.$el);
+            this.overlayAppended = true;
+        }
     }
 
     _updateTime() {
