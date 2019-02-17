@@ -213,6 +213,7 @@ export default class RTMP extends Flash {
     }
 
     _checkState() {
+        if (!this.el.getState || typeof this.el.getState !== 'function') return;
         super._checkState()
 
         if (this.el.getState() === "ERROR") {
