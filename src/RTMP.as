@@ -126,25 +126,34 @@ package {
       ExternalInterface.addCallback("getBytesTotal", getBytesTotal);
       ExternalInterface.addCallback("getNumLevels", getNumLevels);
       ExternalInterface.addCallback("getBitrateForLevel", getBitrateForLevel);
+      ExternalInterface.addCallback("getBufferLength", getBufferLength);
       ExternalInterface.addCallback("isDynamicStream", isDynamicStream);
       ExternalInterface.addCallback("isAutoSwitchLevels", isAutoSwitchLevels);
     }
 
     private function getBytesTotal():Number {
-      if (netStream) {
-        return netStream.bytesTotal;
+      if (mediaPlayer) {
+        return mediaPlayer.bytesTotal;
       }
       else {
           return 0;
       }
     }
     private function getBytesLoaded():Number {
-        if (netStream) {
-          return netStream.bytesLoaded;
+        if (mediaPlayer) {
+          return mediaPlayer.bytesLoaded;
         }
         else {
             return 0;
         }
+    }
+
+    private function getBufferLength():Number {
+      if (mediaPlayer) {
+        return mediaPlayer.bufferLength;
+      } else {
+        return 0;
+      }
     }
 
     private function onTraitAdd(event:MediaElementEvent):void {
@@ -317,12 +326,10 @@ package {
     }
 
     private function getPosition():Number {
-      if (isLive) return 1;
       return mediaPlayer.currentTime;
     }
 
     private function getDuration():Number {
-      if (isLive) return 1;
       return mediaPlayer.duration;
     }
 
