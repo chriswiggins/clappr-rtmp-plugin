@@ -1,6 +1,6 @@
 {
   "name": "@vgrid/clappr-rtmp",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "RTMP Support for Clappr Player",
   "main": "dist/rtmp.min.js",
   "author": "Flávio Ribeiro",
@@ -12,6 +12,7 @@
     "streaming"
   ],
   "homepage": "http://clappr.io",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "http://github.com/vgrid/clappr-rtmp-plugin"
   },
@@ -19,32 +20,36 @@
     "type": "git",
     "url": "git@github.com:vgrid/clappr-rtmp-plugin.git"
   },
+  "files": [
+    "dist/**/*",
+    "src/**/*"
+  ],
   "scripts": {
     "build_swf": "sh build_player.sh",
-    "release": "NODE_ENV=production node_modules/.bin/webpack --progress -d --output-filename rtmp.min.js",
-    "build": "node_modules/.bin/webpack --progress",
-    "watch": "node_modules/.bin/webpack --progress --watch",
+    "release": "NODE_ENV=production webpack",
+    "build": "webpack --progress",
+    "watch": "webpack --progress --watch",
     "test": "karma start --single-run --browsers Chrome",
     "start": "node_modules/.bin/webpack-dev-server --content-base public/ --output-public-path /latest --hot",
     "lock": "rm -rf npm-shrinkwrap.json node_modules && npm install --silent && npm shrinkwrap"
   },
   "dependencies": {
     "clappr": "latest",
-    "html-loader": "^0.5.5",
-    "raw-loader": "^0.5.1",
-    "sass-loader": "^7.1.0"
+    "html-loader": "^1.3.2",
+    "raw-loader": "^4.0.2",
+    "sass-loader": "^10.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-env": "^7.12.1",
     "babel-loader": "^8.0.2",
-    "css-loader": "^1.0.0",
-    "mocha": "^5.2.0",
-    "mocha-loader": "^2.0.0",
-    "node-sass": "^4.9.3",
-    "style-loader": "^0.23.0",
-    "transfer-webpack-plugin": "^0.1.4",
-    "webpack": "^4.19.0",
-    "webpack-cli": "^3.1.0"
+    "copy-webpack-plugin": "^6.2.1",
+    "css-loader": "^5.0.0",
+    "mocha": "^8.2.0",
+    "mocha-loader": "^5.1.5",
+    "node-sass": "^4.14.1",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.3.2",
+    "webpack-cli": "^4.1.0"
   }
 }

@@ -242,10 +242,11 @@ export default class RTMP extends Flash {
 
 RTMP.canPlay = function (source, mimeType) {
     return !!((
-        source.indexOf('rtmp://') > -1 || 
-        source.indexOf('rtmps://') > -1 || 
-        source.indexOf('.smil') > -1 || 
-        mimeType && mimeType.indexOf('rtmp') > -1) && (Browser.hasFlash || Browser.isChrome)); //Chrome doesn't expose hasFlash
+        source.indexOf('rtmp://') > -1 ||
+        source.indexOf('rtmps://') > -1 ||
+        source.indexOf('.smil') > -1 ||
+        mimeType && mimeType.indexOf('rtmp') > -1)
+    );
 };
 
 RTMP.debug = s => console.log(s)

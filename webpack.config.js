@@ -1,60 +1,110 @@
-const path = require('path');
-const TransferWebpackPlugin = require('transfer-webpack-plugin');
-const plugins = [new TransferWebpackPlugin([
-    { from: 'public/', to: 'assets/' }
-    ])];
-let filename = 'rtmp.js';
+const CopyPlugin = require('copy-webpack-plugin');
+const { resolve } = require('path');
 
-const production = process.env.NODE_ENV === 'production';
-
-if (production) {
-    filename = 'rtmp.min.js';
-}
+const isDev = process.env.NODE_ENV !== 'production';
 
 module.exports = {
-    mode: production ? 'production' : 'development',
-    entry: path.resolve(__dirname, 'src/main.js'),
-    devtool: production ? "source-map" : "",
-    externals: {
-        clappr: 'Clappr',
-    },
-    target: 'web',
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                query: {
-                    compact: true,
-                }
-            },
-            {
-                test: /\.scss$/,
-                loaders: ['css-loader', 'sass-loader?includePaths[]='
-                  + path.resolve(__dirname, './node_modules/compass-mixins/lib')
-                  + '&includePaths[]='
-                  + path.resolve(__dirname, './node_modules/clappr/src/base/scss')
-                  + '&includePaths[]='
-                  + path.resolve(__dirname, './src/base/scss')
-                ],
-                include: path.resolve(__dirname, 'src'),
-            },
-            {
-                test: /\.html/, loader: 'html-loader?minimize=false'
-            },
-            {
-                test: /\.(png|woff|eot|ttf|swf)/, loader: 'file-loader'
+
+  entry: resolve(__dirname, 'src/main.js'),
+
+  externals: [
+    { clappr: 'Clappr' }
+  ],
+
+  mode: isDev ? 'development' : 'production',
+
+  module: {
+    rules: [
+
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [
+          { loader: 'babel-loader' }
+        ]
+      },
+
+      {
+        test: /\.scss$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              modules: false,
+              sourceMap: isDev
             }
-        ],
-    },
-    resolve: {
-        extensions: ['.js'],
-    },
-    plugins: plugins,
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: filename,
-        library: 'RTMP',
-        libraryTarget: 'umd',
-    },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('node-sass'),
+              sassOptions: {
+                includePaths: [
+                  resolve('node_modules/compass-mixins/lib'),
+                  resolve('node_modules/clappr/src/base/scss'),
+                  resolve('src/base/scss')
+                ]
+              },
+              sourceMap: isDev
+            }
+          }
+        ]
+      },
+
+      {
+        test: /\.html$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'html-loader',
+            options: {
+              minify: false,
+              xhtml: true
+            }
+          }
+        ]
+      },
+
+      {
+        test: /\.(png|woff|eot|ttf|swf)/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'file-loader'
+          }
+        ]
+      }
+
+    ]
+  },
+
+  output: {
+    path: resolve(__dirname, 'dist'),
+    filename: isDev ? 'rtmp.js' : 'rtmp.min.js',
+    library: 'RTMP',
+    libraryTarget: 'umd',
+  },
+
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          context: resolve(__dirname, 'public'),
+          from: '**/*',
+          // globOptions: {
+          //   ignore: [ '*.scss', '*.ts' ]
+          // },
+          to: 'assets'
+        }
+      ]
+    })
+  ],
+
+  resolve: {
+    extensions: ['.js'],
+  },
+
+  target: 'web',
+
 };
