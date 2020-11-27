@@ -1,6 +1,6 @@
 {
   "name": "@vgrid/clappr-rtmp",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "RTMP Support for Clappr Player",
   "main": "dist/rtmp.min.js",
   "author": "Flávio Ribeiro",
@@ -31,7 +31,8 @@
     "watch": "webpack --progress --watch",
     "test": "karma start --single-run --browsers Chrome",
     "start": "node_modules/.bin/webpack-dev-server --content-base public/ --output-public-path /latest --hot",
-    "lock": "rm -rf npm-shrinkwrap.json node_modules && npm install --silent && npm shrinkwrap"
+    "lock": "rm -rf npm-shrinkwrap.json node_modules && npm install --silent && npm shrinkwrap",
+    "prepublishOnly": "npm run release"
   },
   "dependencies": {
     "clappr": "latest",

@@ -1,47 +1,37 @@
-clappr-rtmp-plugin
+@vgrid/clappr-rtmp
 ==================
-
-RTMP support for [Clappr player](http://github.com/globocom/clappr). Supports both RTMP direct and SMIL (dynamic streaming).
-
-## How to use
-
-Import rtmp.min.js
-
-```javascript
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/video-dev/clappr-rtmp-plugin@latest/dist/rtmp.min.js">
-</script>
-```
-and create Clappr Player adding the external plugin:
 
 ```javascript
 var player = new Clappr.Player({
-    source: "rtmp://source_here",
-    parentId: "#player-wrapper",
-    plugins: {'playback': [RTMP]},
-    rtmpConfig: {
-        swfPath: 'dist/assets/RTMP.swf',
-        scaling:'stretch',
-        playbackType: 'live',
-        bufferTime: 1,
-        startLevel: 0,
-        switchRules: {
-            "SufficientBandwidthRule": {
-                "bandwidthSafetyMultiple": 1.15,
-                "minDroppedFps": 2
-            },
-            "InsufficientBufferRule": {
-                "minBufferLength": 2
-            },
-            "DroppedFramesRule": {
-                "downSwitchByOne": 10,
-                "downSwitchByTwo": 20,
-                "downSwitchToZero": 24
-            },
-            "InsufficientBandwidthRule": {
-                "bitrateMultiplier": 1.15
-            }
-        }
-    },
+  source: 'rtmp://source_here',
+  parentId: "#player-wrapper",
+  plugins: {
+    playback: [RTMP]
+  },
+  rtmpConfig: {
+    swfPath: 'dist/assets/RTMP.swf',
+    scaling:'stretch',
+    playbackType: 'live',
+    bufferTime: 1,
+    startLevel: 0,
+    switchRules: {
+      DroppedFramesRule: {
+        downSwitchByOne: 10,
+        downSwitchByTwo: 20,
+        downSwitchToZero: 24
+      },
+      InsufficientBandwidthRule: {
+        bitrateMultiplier: 1.15
+      },
+      InsufficientBufferRule: {
+        minBufferLength: 2
+      },
+      SufficientBandwidthRule: {
+        bandwidthSafetyMultiple: 1.15,
+        minDroppedFps: 2
+      }
+    }
+  }
 });
 ```
 
