@@ -66,6 +66,7 @@ package {
 
 
     public function RTMP() {
+      debugLog('constructor begin');
       Security.allowDomain('*');
       Security.allowInsecureDomain('*');
 
@@ -97,6 +98,7 @@ package {
       }
 
       stage.addEventListener(Event.RESIZE, resize);
+      debugLog('constructor end');
     }
 
     private function resize(e:Event = null):void {
@@ -164,25 +166,32 @@ package {
     }
 
     private function onLoaded(event:LoadEvent):void {
+      debugLog('onloaded');
       _triggerEvent("onloaded")
       netStream = netStreamLoadTrait.netStream;
       netStream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
       mediaPlayer.play();
+      debugLog('should be playing');
     }
 
     private function netStatusHandler(event:NetStatusEvent):void {
       if (playbackState == "ENDED") {
+        debugLog('network status suggests playback is over');
         return;
       } else if (event.info.code == "NetStream.Buffer.Full") {
+        debugLog('network status suggests playback buffer is ready');
         _changeStateAndNotify('PLAYING');
       } else if (event.info.code == "NetStream.Buffer.Empty" || event.info.code == "NetStream.Seek.Notify") {
+        debugLog('network status suggests playback is buffering');
         _changeStateAndNotify('PLAYING_BUFFERING');
       }
     }
 
     private function playerPlay(url:String=null):void {
+      debugLog('player play: ' + url)
       try {
         if (!mediaElement) {
+          debugLog('media element does not exist, creating');
           var streamType:String = (isLive ? StreamType.LIVE : StreamType.RECORDED);
 
           urlResource = new StreamingURLResource(url, streamType, NaN, NaN, null, useAppInstance, null, proxyType);
@@ -244,7 +253,9 @@ package {
 
           _changeStateAndNotify('PLAYING_BUFFERING')
           _triggerEvent('playbackready');
+          debugLog('should be ready to start playing now')
         } else {
+          debugLog('media element already exists, playing');
           mediaPlayer.play();
           _changeStateAndNotify('PLAYING')
         }
@@ -369,10 +380,15 @@ package {
     }
 
     private function _triggerEvent(name: String):void {
-      ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+      try {
+        ExternalInterface.call('Clappr.Mediator.trigger("' + playbackId + ':' + name +'")');
+      } catch (err:Error) {
+        debugLog('unable to trigger event: ' + err);
+      }
     }
 
     private function debugLog(msg:String):void {
+      ExternalInterface.call('ClapprRTMPLog("[debug] ' + msg.replace(/"/g, '&quot') + '")');
       CONFIG::LOGGING {
         if (logger != null) {
           logger.info(msg);
@@ -384,6 +400,7 @@ package {
       debugLog('Changing state to '+state);
       playbackState = state;
       _triggerEvent('statechanged');
+      debugLog('state changed to ' + state);
     }
   }
 }

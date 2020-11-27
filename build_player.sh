@@ -1,5 +1,5 @@
+echo "Running docker image instrumentisto/flex-sdk to build RTMP.swf";
 
-echo "Running docker image instrumentisto/flex-sdk to build RTMP.swf"
 docker run --rm -it -v $(pwd):/app instrumentisto/flex-sdk mxmlc \
   -define CONFIG::LOGGING false \
   -define CONFIG::MOCK false \
@@ -14,5 +14,5 @@ docker run --rm -it -v $(pwd):/app instrumentisto/flex-sdk mxmlc \
   -use-gpu=true \
   -target-player=30.0 \
   -use-network=false \
-  ./src/RTMP.as -library-path+=./src/OSMF.swc:./src/SMILPlugin.swc
-
+  ./src/RTMP.as -library-path+=./src/OSMF.swc:./src/SMILPlugin.swc \
+  ;
